@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import FormHandler from '../FormComponent/form';
-import bookService from '../../service/bookService';
+import BookService from '../../service/bookService';
 
 class AddBook extends Component{
     constructor(props){
@@ -41,11 +41,11 @@ class AddBook extends Component{
         };
         console.log(`book =>` +JSON.stringify(book));
         if(this.state.id==='_add'){
-            bookService.addBook(book).then(res=>{
+            BookService.addBook(book).then(res=>{
                 this.props.history.push('/books');
             });
         }else{
-            bookService.updateBook(book,this.state.id).then(res=>{
+            BookService.updateBook(book,this.state.id).then(res=>{
                 this.props.history.push('/books');
             })
         }

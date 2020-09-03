@@ -42,6 +42,5 @@ class GetBook extends Component{
             </div>
         );        
     }
-}
-
+};
 export default GetBook;

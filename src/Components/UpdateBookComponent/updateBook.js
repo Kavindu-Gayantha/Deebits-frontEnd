@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import bookService from '../../service/bookService';
+import BookService from '../../service/bookService';
 
 class UpdateBook extends Component{
     constructor(props){
@@ -16,7 +16,7 @@ class UpdateBook extends Component{
         this.updateBook = this.updateBook.bind(this);
     }
     componentDidMount(){
-        bookService.getBookById(this.state.id).then( (res) =>{
+        BookService.getBookById(this.state.id).then( (res) =>{
             let book = res.data;
             this.setState({
                 name: book.name,
