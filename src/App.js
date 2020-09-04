@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
-// import logo from './logo.svg';
+
 import './App.css';
-// import { Button, Checkbox, Form } from 'semantic-ui-react'
+
 import Header from './Components/Header/header';
 
 import {Modal,ModalBody,ModalHeader,ModalFooter,Table,Button,FormGroup,Label, Input} from 'reactstrap';
@@ -25,20 +24,23 @@ class App extends Component{
       name:'',
       category:''
     },
-    newBookModal:false
+    newBookModal:false,
+    editBookModal:false
   }
 
   
   componentWillMount(){
-    axios.get('http://localhost:3000/api/books').then((Response)=>{
-      this.setState({
-        books:Response.data
-      })
-    })
+    this._refreshBooks();
   }
   toggleNewBookModal(){
     this.setState({
       newBookModal:!this.state.newBookModal
+    })
+  
+  }
+  toggleEditBookModal(){
+    this.setState({
+      editBookModal:!this.state.editBookModal
     })
   
   }
@@ -58,9 +60,47 @@ class App extends Component{
 
   //edit book 
   editBook(id,name,category){
-    console.log(name);
+    // console.log(name);
+    this.setState({
+      editBookData:{id,name,category},
+      editBookModal:!this.state.editBookModal
+    });
   }
 
+//update book
+  updateBook(){
+    let {name, category} = this.state.editBookData;
+
+    axios.put('http://localhost:8081/api/updateBook'+this.state.editBookData.id,{
+      name,category
+    }).then((response)=>{
+      this._refreshBooks();
+      console.log(response.data);
+    })
+    this.setState({
+      editBookModal:false ,
+      editBookData:{
+        id:'',
+        name:'',
+        category:''
+      }
+    })
+  }
+
+  //delete method
+  deleteBook(id){
+    axios.delete('http://localhost:8081/api/deleteBook' +id).then((response)=>{
+      this._refreshBooks();
+    })
+
+  }
+  _refreshBooks(){
+    axios.get('http://localhost:3000/api/books').then((Response)=>{
+      this.setState({
+        books:Response.data
+      })
+    })
+  }
  
 
   render(){
@@ -78,7 +118,7 @@ class App extends Component{
             </td>
             <td>
               <Button color="success" size="sm" className="mr-2" onClick={this.editBook.bind(this,book.id,book.name,book.category)}>Edit</Button>
-              <Button color="danger" size="sm">Delete</Button>
+              <Button color="danger" size="sm" onClick={this.deleteBook.bind(this,book.id,book)}>Delete</Button>
 
             </td>
           </tr>
@@ -87,7 +127,7 @@ class App extends Component{
       return(
         <div>
               <Header></Header>  
-              {/* <FormHandler></FormHandler> */}
+              
 
             <div className="App container">
             <Button color="primary" onClick={this.toggleNewBookModal.bind(this)}>Add Book</Button>
@@ -124,12 +164,14 @@ class App extends Component{
                   <Button color="secondary" onClick={this.toggleNewBookModal.bind(this)}>Cancel</Button>
                 </ModalFooter>
               </Modal>
+
+
               {/* edit book model toggle menu */}
 
 
 
               <Modal isOpen={this.state.editBookModal} toggle={this.toggleEditBookModal.bind(this)}>
-                <ModalHeader toggle={this.toggleEditBookModal.bind(this)}>Add a New Book</ModalHeader>
+                <ModalHeader toggle={this.toggleEditBookModal.bind(this)}>Edit Book</ModalHeader>
                 <ModalBody>
                     <FormGroup>
                       <Label for="Book ID">Book Id</Label>
@@ -157,7 +199,7 @@ class App extends Component{
                     </FormGroup>
                 </ModalBody>
                 <ModalFooter>
-                  <Button color="primary" onClick={this.editBook.bind(this)}>Add Book</Button>{' '}
+                  <Button color="primary" onClick={this.updateBook.bind(this)}>Update Book</Button>{' '}
                   <Button color="secondary" onClick={this.toggleEditBookModal.bind(this)}>Cancel</Button>
                 </ModalFooter>
               </Modal>
